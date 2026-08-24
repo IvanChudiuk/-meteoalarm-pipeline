@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+  <id>tag:meteoalarm.org,2021-02-19:ES</id>
+  <title>MeteoAlarm - Alerting Europe for Extreme Weather</title>
+  <updated>2026-08-23T15:41:16.920728Z</updated>
+
+  <entry>
+    <cap:geocode>
+      <valueName>EMMA_ID</valueName>
+      <value>ES236</value>
+    </cap:geocode>
+    <cap:areaDesc>Bizkaia interior</cap:areaDesc>
+    <cap:event>Moderate thunderstorm warning</cap:event>
+    <cap:sent>2026-08-23T15:36:09+00:00</cap:sent>
+    <cap:expires>2026-08-23T17:59:59+00:00</cap:expires>
+    <cap:effective>2026-08-23T15:32:58+00:00</cap:effective>
+    <cap:onset>2026-08-23T15:00:00+00:00</cap:onset>
+    <cap:certainty>Likely</cap:certainty>
+    <cap:severity>Moderate</cap:severity>
+    <cap:urgency>Immediate</cap:urgency>
+    <cap:scope>Public</cap:scope>
+    <cap:message_type>Alert</cap:message_type>
+    <cap:status>Actual</cap:status>
+    <cap:identifier>2.49.0.0.724.0.ES.260823153609.754802TOTO231899369</cap:identifier>
+    <link type="application/cap+xml" href="https://feeds.meteoalarm.org/api/v1/warnings/feeds-spain/9d62e839-995b-4831-854e-3c006c69eefb"/>
+    <link title="Spain" rel="related" href="https://meteoalarm.org?region=ES" hreflang="en"/>
+    <title>Yellow Thunderstorm Warning issued for Spain - Bizkaia interior</title>
+    <updated>2026-08-23T15:36:09Z</updated>
+  </entry>
+
+  <entry>
+    <cap:geocode>
+      <valueName>EMMA_ID</valueName>
+      <value>ES188</value>
+    </cap:geocode>
+    <cap:areaDesc>Depresión central de Lleida</cap:areaDesc>
+    <cap:event>Severe thunderstorm warning</cap:event>
+    <cap:sent>2026-08-23T09:30:09+00:00</cap:sent>
+    <cap:expires>2026-08-24T21:59:59+00:00</cap:expires>
+    <cap:effective>2026-08-23T09:27:27+00:00</cap:effective>
+    <cap:onset>2026-08-24T10:00:00+00:00</cap:onset>
+    <cap:certainty>Likely</cap:certainty>
+    <cap:severity>Severe</cap:severity>
+    <cap:urgency>Future</cap:urgency>
+    <cap:scope>Public</cap:scope>
+    <cap:message_type>Update</cap:message_type>
+    <cap:status>Actual</cap:status>
+    <cap:identifier>2.49.0.0.724.0.ES.260823093009.692503TOTO242277409</cap:identifier>
+    <link type="application/cap+xml" href="https://feeds.meteoalarm.org/api/v1/warnings/feeds-spain/a7d8d751-9f9d-42e2-a0a3-2546c4820139"/>
+    <link title="Spain" rel="related" href="https://meteoalarm.org?region=ES" hreflang="en"/>
+    <title>Orange Thunderstorm Warning issued for Spain - Depresión central de Lleida</title>
+    <updated>2026-08-23T09:30:09Z</updated>
+  </entry>
+
+  <entry>
+    <cap:geocode>
+      <valueName>EMMA_ID</valueName>
+      <value>ES878</value>
+    </cap:geocode>
+    <cap:areaDesc>Costa - Menorca</cap:areaDesc>
+    <cap:event>Severe rissagas warning</cap:event>
+    <cap:sent>2026-08-23T09:14:08+00:00</cap:sent>
+    <cap:expires>2026-08-24T21:59:59+00:00</cap:expires>
+    <cap:effective>2026-08-23T09:11:18+00:00</cap:effective>
+    <cap:onset>2026-08-24T07:00:00+00:00</cap:onset>
+    <cap:certainty>Likely</cap:certainty>
+    <cap:severity>Severe</cap:severity>
+    <cap:urgency>Future</cap:urgency>
+    <cap:scope>Public</cap:scope>
+    <cap:message_type>Update</cap:message_type>
+    <cap:status>Actual</cap:status>
+    <cap:identifier>2.49.0.0.724.0.ES.260823091408.645501RIRI242276448</cap:identifier>
+    <link type="application/cap+xml" href="https://feeds.meteoalarm.org/api/v1/warnings/feeds-spain/529c8045-1515-4f25-88a1-122e4e16f971"/>
+    <link title="Spain" rel="related" href="https://meteoalarm.org?region=ES" hreflang="en"/>
+    <title>Orange Coastalevent Warning issued for Spain - Costa - Menorca</title>
+    <updated>2026-08-23T09:14:08Z</updated>
+  </entry>
+
+  <entry>
+    <cap:geocode>
+      <valueName>EMMA_ID</valueName>
+      <value>ES999</value>
+    </cap:geocode>
+    <cap:areaDesc>Malformed entry (missing severity, must be skipped)</cap:areaDesc>
+    <cap:event>Moderate wind warning</cap:event>
+    <cap:sent>2026-08-23T09:14:08+00:00</cap:sent>
+    <cap:expires>2026-08-24T21:59:59+00:00</cap:expires>
+    <cap:effective>2026-08-23T09:11:18+00:00</cap:effective>
+    <cap:onset>2026-08-24T07:00:00+00:00</cap:onset>
+    <cap:certainty>Likely</cap:certainty>
+    <cap:urgency>Future</cap:urgency>
+    <cap:scope>Public</cap:scope>
+    <cap:message_type>Update</cap:message_type>
+    <cap:status>Actual</cap:status>
+    <cap:identifier>2.49.0.0.724.0.ES.999999999999.000000TEST000000000</cap:identifier>
+    <link type="application/cap+xml" href="https://feeds.meteoalarm.org/api/v1/warnings/feeds-spain/00000000-0000-0000-0000-000000000000"/>
+    <title>Yellow Wind Warning issued for Spain - Malformed entry</title>
+    <updated>2026-08-23T09:14:08Z</updated>
+  </entry>
+</feed>

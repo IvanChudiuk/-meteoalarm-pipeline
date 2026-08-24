@@ -1,0 +1,87 @@
+# Countries configuration for MeteoAlarm pipeline
+# 
+# Each country can be enabled/disabled and filtered by severity, certainty, and urgency.
+# Leave filters empty to track all values.
+#
+# Global defaults (optional):
+# If use_defaults is true, apply default filters to all enabled countries.
+# Individual country filters can still override these if needed.
+
+defaults:
+  use_defaults: True  # Set to true to apply defaults to all countries
+  severities: [orange, red]
+  certainties: [observed, likely, possible]
+  urgencies: [immediate, expected, future]
+
+countries:
+  spain:
+    enabled: true
+    name: Spain
+    feed_url: https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-spain
+    severities: [green, yellow, orange, red]
+    certainties: [observed, likely, possible]
+    urgencies: [immediate, expected, future]
+
+  france:
+    enabled: true
+    name: France
+    feed_url: https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-france
+    severities: [green, yellow, orange, red]
+    certainties: [observed, likely, possible]
+    urgencies: [immediate, expected, future]
+
+  italy:
+    enabled: true
+    name: Italy
+    feed_url: https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-italy
+    severities: [green, yellow, orange, red]
+    certainties: [observed, likely, possible]
+    urgencies: [immediate, expected, future]
+
+  germany:
+    enabled: true
+    name: Germany
+    feed_url: https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-germany
+    severities: [green, yellow, orange, red]
+    certainties: [observed, likely, possible]
+    urgencies: [immediate, expected, future]
+
+  portugal:
+    enabled: true
+    name: Portugal
+    feed_url: https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-portugal
+    severities: [green, yellow, orange, red]
+    certainties: [observed, likely, possible]
+    urgencies: [immediate, expected, future]
+
+  netherlands:
+    enabled: true
+    name: Netherlands
+    feed_url: https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-netherlands
+    severities: [green, yellow, orange, red]
+    certainties: [observed, likely, possible]
+    urgencies: [immediate, expected, future]
+
+  belgium:
+    enabled: true
+    name: Belgium
+    feed_url: https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-belgium
+    severities: [green, yellow, orange, red]
+    certainties: [observed, likely, possible]
+    urgencies: [immediate, expected, future]
+
+  switzerland:
+    enabled: true
+    name: Switzerland
+    feed_url: https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-switzerland
+    severities: [green, yellow, orange, red]
+    certainties: [observed, likely, possible]
+    urgencies: [immediate, expected, future]
+
+  poland:
+    enabled: true
+    name: Poland
+    feed_url: https://feeds.meteoalarm.org/feeds/meteoalarm-legacy-atom-poland
+    severities: [green, yellow, orange, red]
+    certainties: [observed, likely, possible]
+    urgencies: [immediate, expected, future]
