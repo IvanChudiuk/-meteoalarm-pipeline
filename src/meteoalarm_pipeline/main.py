@@ -30,6 +30,7 @@ _SEVERITY_ORDER: dict[Severity, int] = {
     Severity.RED: 0,
     Severity.ORANGE: 1,
     Severity.YELLOW: 2,
+    Severity.GREEN: 3,
 }
 
 

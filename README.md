@@ -1,7 +1,7 @@
 # MeteoAlarm Pipeline
 
 An async ETL pipeline that fetches severe weather alerts (rain, wind, thunderstorm,
-snow, etc.) from [MeteoAlarm](https://meteoalarm.org)'s public ATOM/CAP feeds for
+snow, etc.) from [MeteoAlarm](https://meteoalarm.org)'s public [ATOM/CAP feeds](https://feeds.meteoalarm.org/) for
 multiple European countries, validates and normalises them, and stores them for
 querying and summary reporting.
 
@@ -118,14 +118,6 @@ countries:
 
 Leave filter lists empty to track all values for that filter.
 
-## Roadmap
-
-- [x] Fetch + parse + validate + print (this slice)
-- [ ] Postgres persistence via SQLAlchemy (async) + Alembic migrations, idempotent upsert by CAP identifier
-- [ ] Scheduled summary email (SMTP) for new/severe alerts
-- [ ] Dockerfile + docker-compose (app + Postgres)
-- [ ] GitHub Actions CI (lint, type-check, test) and scheduled fetch workflow
-
 ## Adding a country
 
 Add an entry to `config/countries.yaml` with the country's feed URL from 
@@ -142,3 +134,11 @@ Example:
     certainties: [observed, likely]           # Optional
     urgencies: [immediate, expected]          # Optional
 ```
+
+## Roadmap
+
+- [x] Fetch + parse + validate + print (this slice)
+- [ ] Postgres persistence via SQLAlchemy (async) + Alembic migrations, idempotent upsert by CAP identifier
+- [ ] Scheduled summary email (SMTP) for new/severe alerts
+- [ ] Dockerfile + docker-compose (app + Postgres)
+- [ ] GitHub Actions CI (lint, type-check, test) and scheduled fetch workflow

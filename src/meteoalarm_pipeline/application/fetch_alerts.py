@@ -76,4 +76,34 @@ class FetchAlertsUseCase:
         """Fetch and parse the feed for a single country, bounded by the semaphore."""
         async with self._semaphore:
             raw_feed = await self._fetcher.fetch(country)
-        return self._parser.parse(raw_feed, country)
+        alerts = self._parser.parse(raw_feed, country)
+        return self._filter_alerts(alerts, country)
+
+    @staticmethod
+    def _filter_alerts(alerts: list[Alert], country: Country) -> list[Alert]:
+        """Filter alerts based on country's severity, certainty, and urgency criteria.
+
+        If any filter is empty, all values are accepted for that dimension.
+        Filters use lowercase enum names (e.g., "orange", "red" for Severity).
+        """
+        filtered = []
+        for alert in alerts:
+            # Check severity filter (empty = all severities accepted)
+            if country.severities and alert.severity.name.lower() not in country.severities:
+                continue
+            # Check certainty filter (empty = all certainties accepted)
+            if country.certainties and alert.certainty.name.lower() not in country.certainties:
+                continue
+            # Check urgency filter (empty = all urgencies accepted)
+            if country.urgencies and alert.urgency.name.lower() not in country.urgencies:
+                continue
+            filtered.append(alert)
+
+        skipped = len(alerts) - len(filtered)
+        if skipped > 0:
+            logger.debug(
+                "country=%s filtered out %d alerts based on severity/certainty/urgency",
+                country.code,
+                skipped,
+            )
+        return filtered

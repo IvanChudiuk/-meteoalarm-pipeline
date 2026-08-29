@@ -94,7 +94,11 @@ class CapAtomFeedParser:
             message_type = MessageType(self._text(entry, "cap:message_type"))
 
             sent_at = self._parse_datetime(self._text(entry, "cap:sent"))
-            effective_at = self._parse_datetime(self._text(entry, "cap:effective"))
+            # Fall back to cap:expires if cap:effective is not present
+            try:
+                effective_at = self._parse_datetime(self._text(entry, "cap:effective"))
+            except AttributeError:
+                effective_at = self._parse_datetime(self._text(entry, "cap:expires"))
             onset_at = self._parse_datetime(self._text(entry, "cap:onset"))
             expires_at = self._parse_datetime(self._text(entry, "cap:expires"))
 
