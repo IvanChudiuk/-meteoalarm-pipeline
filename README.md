@@ -18,11 +18,11 @@ independent of any specific transport, storage, or notification technology:
 ```
 src/meteoalarm_pipeline/
 ├── domain/            # Pure models & enums - no I/O, no framework dependency
-├── application/        # Use cases + Protocol interfaces ("ports")
+├── application/        # Use cases + Protocol interfaces ("ports") + alert filtering
 ├── infrastructure/     # Concrete implementations of those ports
 │   └── feeds/           # HTTP fetcher + CAP/ATOM parser
 ├── config.py            # Typed settings (env vars) + country registry
-├── logging_config.py     # Centralised logging setup
+├── logging_config.py     # Centralised logging setup (console + daily rotating file logs)
 └── main.py                # Composition root / entrypoint
 ```
 
@@ -54,15 +54,19 @@ This fetches the live feeds for all configured countries concurrently, parses
 and validates every entry, and prints a grouped summary to stdout. Malformed
 entries are logged as warnings and skipped rather than crashing the run.
 
+**Logging:** All logs are written to both stdout and `logs/meteoalarm.log`, with 
+daily rotation (keeps 7 days of logs, rotates at midnight).
+
 ## Test
 
 ```bash
 pytest
 ```
 
-Unit tests cover the CAP/ATOM parser (against a real trimmed sample feed,
-including a deliberately malformed entry) and the fetch/parse orchestration
-logic (against fakes - no real network calls in the unit suite).
+Unit tests cover:
+- CAP/ATOM parser (against a real trimmed sample feed, including a deliberately malformed entry)
+- Fetch/parse orchestration logic and alert filtering (against fakes - no real network calls in the unit suite)
+- End-to-end pipeline tests covering the complete flow from feed fetch through parsing and filtering
 
 ## Configuration
 
