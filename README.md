@@ -63,9 +63,6 @@ This fetches the live feeds for all configured countries concurrently, parses an
 validates all entries, prints a grouped summary to stdout, and sends the summary
 email through SMTP to the configured recipient.
 
-If SMTP is not running on `localhost:1025`, the app raises a
-`ConnectionRefusedError`.
-
 **Logging:** All logs are written to stdout and `logs/meteoalarm.log`, with daily
 rotation (keeps 7 days of logs and rotates at midnight).
 
