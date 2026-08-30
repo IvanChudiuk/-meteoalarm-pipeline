@@ -182,7 +182,7 @@ new_country:
 ## Roadmap
 
 - [x] Fetch + parse + validate + print
-- [ ] Postgres persistence via SQLAlchemy (async) + Alembic migrations and idempotent upsert by CAP identifier
-- [ ] Scheduled summary email (SMTP) for new or severe alerts
-- [ ] Dockerfile + docker-compose (app + Postgres)
+- [ ] Scheduled summary email via SMTP using MailHog in local dev and Jinja2 templates for alert summaries
 - [ ] GitHub Actions CI (lint, type-check, test) and scheduled fetch workflow
+- [ ] Postgres persistence via SQLAlchemy (async) + Alembic migrations and idempotent upsert by CAP identifier
+- [ ] Dockerfile + docker-compose (app + Postgres + MailHog)
