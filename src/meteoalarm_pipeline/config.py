@@ -11,6 +11,7 @@ easy enable/disable and alert filtering by severity, certainty, and urgency.
 from __future__ import annotations
 
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import yaml
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -72,6 +73,14 @@ class Settings(BaseSettings):
         http_timeout_seconds: Per-request timeout for feed HTTP calls.
         max_concurrency: Max number of feeds fetched at once.
         database_url: Postgres connection string (used from the DB slice onward).
+        timezone_name: Default application timezone; CET is used locally by default.
+        smtp_host: SMTP host used for summary emails.
+        smtp_port: SMTP port used for summary emails.
+        smtp_username: Optional SMTP username.
+        smtp_password: Optional SMTP password.
+        email_from: Sender address used for summary emails.
+        email_to: Recipient address used for summary emails.
+        smtp_enabled: Whether to send summary emails.
 
     """
 
@@ -81,6 +90,23 @@ class Settings(BaseSettings):
     http_timeout_seconds: float = 10.0
     max_concurrency: int = 5
     database_url: str = "postgresql+asyncpg://meteoalarm:meteoalarm@localhost:5432/meteoalarm"
+    timezone_name: str = "Europe/Warsaw"
+    smtp_host: str = "localhost"
+    smtp_port: int = 1025
+    smtp_username: str | None = None
+    smtp_password: str | None = None
+    email_from: str = "meteoalarm@localhost"
+    email_to: str = "ops@localhost"
+    smtp_enabled: bool = True
+
+    @property
+    def timezone(self) -> ZoneInfo:
+        """Return the configured timezone as a ZoneInfo instance.
+
+        This automatically handles winter/summer offset changes (CET/CEST) for
+        the configured region, instead of using a fixed UTC offset.
+        """
+        return ZoneInfo(self.timezone_name)
 
 
 def get_settings() -> Settings:

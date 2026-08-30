@@ -19,11 +19,14 @@ validates and normalises them, and prepares them for querying and reporting.
 
 ## Overview
 
-This project is the first working slice of the pipeline: **fetch → parse → validate → print**.
+This project is the first working slice of the pipeline: **fetch → parse → validate → print → email**.
 It currently fetches alerts for configured countries, parses CAP/ATOM XML feeds,
-validates the data, and prints a grouped summary to stdout.
+validates the data, prints a grouped summary to stdout, and sends an HTML email
+summary with an alert table.
 
 Malformed entries are logged as warnings and skipped instead of crashing the feed.
+
+All times in the email are displayed in **Europe/Warsaw timezone** with automatic DST handling (CET/CEST).
 
 ## Quick start
 
@@ -41,12 +44,27 @@ pip install -e ".[dev]"
 
 ### Run
 
+Start MailHog first if you want the summary email to be sent locally:
+
+```bash
+docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
+```
+
+Then run:
+
 ```bash
 python -m meteoalarm_pipeline.main
 ```
 
+You can inspect the inbox at: http://localhost:8025 to verify the email was received with the correct alert table.
+Without the MailHog server running, the app won't raise an error and just log a warning.
+
 This fetches the live feeds for all configured countries concurrently, parses and
-validates all entries, and prints a grouped summary to stdout.
+validates all entries, prints a grouped summary to stdout, and sends the summary
+email through SMTP to the configured recipient.
+
+If SMTP is not running on `localhost:1025`, the app raises a
+`ConnectionRefusedError`.
 
 **Logging:** All logs are written to stdout and `logs/meteoalarm.log`, with daily
 rotation (keeps 7 days of logs and rotates at midnight).
@@ -61,8 +79,9 @@ src/meteoalarm_pipeline/
 ├── domain/            # Pure models & enums - no I/O, no framework dependency
 ├── application/       # Use cases + protocol interfaces + alert filtering
 ├── infrastructure/    # Concrete implementations of those ports
-│   └── feeds/         # HTTP fetcher + CAP/ATOM parser
-├── config.py          # Typed settings (env vars) + country registry
+│   ├── feeds/         # HTTP fetcher + CAP/ATOM parser
+│   └── email/         # SMTP notifier + Jinja2 HTML templates
+├── config.py          # Typed settings (env vars) + country registry + timezone config
 ├── logging_config.py  # Centralised logging setup (console + daily rotating file logs)
 ├── main.py            # Composition root / entrypoint
 └── __init__.py
@@ -86,8 +105,23 @@ parses each alert, and prints a human-readable summary.
 ## Configuration
 
 All runtime settings (log level, timeouts, database URL, etc.) are environment
-variables with a `METEOALARM_` prefix. See `.env.example` for the full list and
-`src/meteoalarm_pipeline/config.py` for the default values.
+variables with a `METEOALARM_` prefix. See `src/meteoalarm_pipeline/config.py` for the full list and default values.
+
+### Email configuration
+
+The app sends summary emails via SMTP with the following defaults:
+- **Timezone:** Europe/Warsaw (automatic DST handling: CET in winter, CEST in summer)
+- **SMTP host:** localhost:1025 (local MailHog for development)
+- **Email from:** meteoalarm@localhost
+- **Email to:** ops@localhost
+
+The email includes a formatted HTML table with columns:
+- **alert_color** (with colored badges: Red, Orange, Yellow, Green)
+- **alert_type** (event description)
+- **country_name** (e.g. Spain, France)
+- **zone_name** (affected area)
+- **alert_start** (when the alert becomes effective, in local timezone)
+- **alert_expires** (when the alert expires, in local timezone)
 
 ### Countries and alert filters
 
@@ -160,6 +194,8 @@ The test suite covers:
 - CAP/ATOM parser behaviour against a real trimmed XML sample, including a deliberately malformed entry
 - fetch/parse orchestration logic and alert filtering using fakes instead of real network calls
 - end-to-end flow validation from feed fetch to parsing and filtering
+- email rendering and SMTP send behavior with timezone-aware alert times
+
 
 ## Adding a country
 
@@ -182,7 +218,7 @@ new_country:
 ## Roadmap
 
 - [x] Fetch + parse + validate + print
-- [ ] Scheduled summary email via SMTP using MailHog in local dev and Jinja2 templates for alert summaries
+- [x] Scheduled summary email via SMTP using MailHog in local dev and Jinja2 templates for alert summaries
 - [ ] GitHub Actions CI (lint, type-check, test) and scheduled fetch workflow
 - [ ] Postgres persistence via SQLAlchemy (async) + Alembic migrations and idempotent upsert by CAP identifier
 - [ ] Dockerfile + docker-compose (app + Postgres + MailHog)

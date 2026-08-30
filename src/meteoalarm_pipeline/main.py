@@ -20,6 +20,7 @@ from meteoalarm_pipeline.application.fetch_alerts import FetchAlertsUseCase
 from meteoalarm_pipeline.config import COUNTRIES, get_settings
 from meteoalarm_pipeline.domain.enums import Severity
 from meteoalarm_pipeline.domain.models import Alert
+from meteoalarm_pipeline.infrastructure.email.summary_notifier import SummaryEmailNotifier
 from meteoalarm_pipeline.infrastructure.feeds.cap_atom_parser import CapAtomFeedParser
 from meteoalarm_pipeline.infrastructure.feeds.http_client import HttpFeedFetcher
 from meteoalarm_pipeline.logging_config import configure_logging
@@ -86,6 +87,18 @@ async def run() -> list[Alert]:
             max_concurrency=settings.max_concurrency,
         )
         alerts = await use_case.execute(COUNTRIES)
+
+    notifier = SummaryEmailNotifier(
+        from_addr=settings.email_from,
+        to_addrs=[settings.email_to],
+        smtp_host=settings.smtp_host,
+        smtp_port=settings.smtp_port,
+        timezone_name=settings.timezone_name,
+        smtp_username=settings.smtp_username,
+        smtp_password=settings.smtp_password,
+        enabled=settings.smtp_enabled,
+    )
+    notifier.send_summary(alerts)
 
     _print_summary(alerts)
     logger.info("run finished")
