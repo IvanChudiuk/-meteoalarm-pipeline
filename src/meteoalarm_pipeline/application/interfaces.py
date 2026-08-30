@@ -30,6 +30,7 @@ class FeedFetcher(Protocol):
         Raises:
             Exception: Implementations should raise on network/HTTP errors;
                 callers are responsible for deciding whether to retry.
+
         """
         ...
 
@@ -48,6 +49,7 @@ class AlertParser(Protocol):
             A list of validated alerts. Entries that fail validation are
             skipped and logged, not raised, so one bad entry doesn't sink
             the whole feed.
+
         """
         ...
 
@@ -60,6 +62,7 @@ class AlertRepository(Protocol):
 
         Returns:
             The number of rows affected.
+
         """
         ...
 
@@ -72,5 +75,6 @@ class Notifier(Protocol):
 
         Args:
             alerts: The alerts to include in the summary.
+
         """
         ...

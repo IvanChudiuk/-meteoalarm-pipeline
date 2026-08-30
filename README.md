@@ -57,6 +57,18 @@ entries are logged as warnings and skipped rather than crashing the run.
 **Logging:** All logs are written to both stdout and `logs/meteoalarm.log`, with 
 daily rotation (keeps 7 days of logs, rotates at midnight).
 
+## Lint and format
+
+The project uses Ruff for linting and formatting. Run the checks locally before
+opening a PR:
+
+```bash
+ruff format --check .
+ruff format .
+ruff check .
+ruff check . --fix
+```
+
 ## Test
 
 ```bash

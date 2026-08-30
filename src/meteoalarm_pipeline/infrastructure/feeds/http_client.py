@@ -29,6 +29,7 @@ class HttpFeedFetcher:
             and callers can share one connection pool across countries.
         max_attempts: Number of attempts per feed before giving up.
         backoff_seconds: Base delay between retries; doubles each attempt.
+
     """
 
     def __init__(
@@ -52,6 +53,7 @@ class HttpFeedFetcher:
 
         Raises:
             FeedFetchError: If all retry attempts are exhausted.
+
         """
         last_error: Exception | None = None
 

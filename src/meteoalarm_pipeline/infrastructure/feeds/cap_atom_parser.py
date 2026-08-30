@@ -53,6 +53,7 @@ class CapAtomFeedParser:
         Raises:
             CapAtomParseError: If the document itself is not valid XML or
                 has no ``<feed>`` root element.
+
         """
         try:
             root = etree.fromstring(raw_feed)
@@ -134,6 +135,7 @@ class CapAtomFeedParser:
             AttributeError: If no matching element is found (mirrors the
                 error you'd get calling ``.text`` on ``None``), so callers
                 can catch it alongside genuine value-conversion errors.
+
         """
         node = entry.find(xpath, _NAMESPACES)
         if node is None or node.text is None:

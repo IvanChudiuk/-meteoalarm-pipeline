@@ -47,23 +47,33 @@ class Alert(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    identifier: str = Field(..., description="Globally unique CAP identifier; used for dedup/upsert.")
+    identifier: str = Field(
+        ..., description="Globally unique CAP identifier; used for dedup/upsert."
+    )
     country_code: str = Field(..., description="Internal country code this alert belongs to.")
     area_desc: str = Field(..., description="Human-readable area name, e.g. 'Bizkaia interior'.")
-    event: str = Field(..., description="Free-text event name, e.g. 'Moderate thunderstorm warning'.")
+    event: str = Field(
+        ..., description="Free-text event name, e.g. 'Moderate thunderstorm warning'."
+    )
 
     severity: Severity = Field(..., description="Alert severity (Moderate/Severe/Extreme).")
     certainty: Certainty = Field(..., description="Forecaster's confidence the event will occur.")
     urgency: Urgency = Field(..., description="How soon responsive action is recommended.")
-    message_type: MessageType = Field(..., description="Alert lifecycle state (Alert/Update/Cancel).")
+    message_type: MessageType = Field(
+        ..., description="Alert lifecycle state (Alert/Update/Cancel)."
+    )
 
-    sent_at: datetime = Field(..., description="When the alert was sent by the national weather service.")
+    sent_at: datetime = Field(
+        ..., description="When the alert was sent by the national weather service."
+    )
     effective_at: datetime = Field(..., description="When the alert becomes effective.")
     onset_at: datetime = Field(..., description="When the described weather is expected to start.")
     expires_at: datetime = Field(..., description="When the alert expires.")
 
     raw_title: str = Field(..., description="Original feed <title>, kept for display/debugging.")
-    cap_detail_url: str = Field(..., description="Link to the full CAP XML document for this alert.")
+    cap_detail_url: str = Field(
+        ..., description="Link to the full CAP XML document for this alert."
+    )
 
     @property
     def is_severe_or_worse(self) -> bool:

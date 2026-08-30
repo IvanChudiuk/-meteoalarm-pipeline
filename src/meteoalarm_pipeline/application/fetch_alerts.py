@@ -26,6 +26,7 @@ class FetchAlertsUseCase:
         max_concurrency: Maximum number of feeds fetched at the same time.
             Keeps us a well-behaved client rather than hammering the feed
             server with one request per country all at once.
+
     """
 
     def __init__(
@@ -51,6 +52,7 @@ class FetchAlertsUseCase:
         Returns:
             The combined list of alerts across all countries that
             succeeded.
+
         """
         logger.info("starting fetch for %d countries", len(countries))
         results = await asyncio.gather(

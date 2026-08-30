@@ -34,9 +34,7 @@ class TestEndToEnd:
     """End-to-end tests for the complete alert pipeline."""
 
     @pytest.mark.asyncio
-    async def test_fetch_parse_full_pipeline(
-        self, spain: Country, spain_feed_bytes: bytes
-    ) -> None:
+    async def test_fetch_parse_full_pipeline(self, spain: Country, spain_feed_bytes: bytes) -> None:
         """Test the complete flow: fetch -> parse -> return alerts.
 
         Verifies:
@@ -121,9 +119,7 @@ class TestEndToEnd:
         assert mock_fetcher.fetch.call_count == 2
 
     @pytest.mark.asyncio
-    async def test_alert_attributes_complete(
-        self, spain: Country, spain_feed_bytes: bytes
-    ) -> None:
+    async def test_alert_attributes_complete(self, spain: Country, spain_feed_bytes: bytes) -> None:
         """Test that all alert attributes are properly populated from feed.
 
         Verifies timestamp parsing, URL extraction, and enum conversions.

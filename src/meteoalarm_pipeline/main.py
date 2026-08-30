@@ -70,6 +70,7 @@ async def run() -> list[Alert]:
     Returns:
         The combined list of alerts fetched, for callers (e.g. tests or a
         future scheduler) that want the data rather than just the printout.
+
     """
     settings = get_settings()
     configure_logging(settings.log_level)

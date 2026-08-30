@@ -8,18 +8,19 @@ no XML, no event loop surprises - just the orchestration logic under test.
 
 from __future__ import annotations
 
+from datetime import datetime
+from zoneinfo import ZoneInfo
+
 import pytest
 
 from meteoalarm_pipeline.application.fetch_alerts import FetchAlertsUseCase
 from meteoalarm_pipeline.domain.enums import Certainty, MessageType, Severity, Urgency
 from meteoalarm_pipeline.domain.models import Alert, Country
 
-from datetime import datetime, timezone
-
 
 def _make_alert(country_code: str, area: str) -> Alert:
     """Build a minimal, valid Alert for test purposes."""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(ZoneInfo("CET"))
     return Alert(
         identifier=f"{country_code}-{area}",
         country_code=country_code,
@@ -79,7 +80,10 @@ async def test_execute_continues_when_one_country_fails() -> None:
         Country(code="spain", name="Spain", feed_url="https://example.invalid/es"),
         Country(code="france", name="France", feed_url="https://example.invalid/fr"),
     ]
-    use_case = FetchAlertsUseCase(fetcher=FakeFetcher(failing_codes={"france"}), parser=FakeParser())
+    use_case = FetchAlertsUseCase(
+        fetcher=FakeFetcher(failing_codes={"france"}),
+        parser=FakeParser(),
+    )
 
     alerts = await use_case.execute(countries)
 

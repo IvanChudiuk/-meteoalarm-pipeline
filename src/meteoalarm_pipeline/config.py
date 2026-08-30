@@ -20,25 +20,25 @@ from meteoalarm_pipeline.domain.models import Country
 
 def _load_countries_from_yaml() -> list[Country]:
     """Load countries from config/countries.yaml and return only enabled ones.
-    
+
     If defaults.use_defaults is true, apply default filters to all countries
     unless they explicitly override them.
     """
     config_file = Path(__file__).parent.parent.parent / "config" / "countries.yaml"
-    
+
     if not config_file.exists():
         raise FileNotFoundError(f"Countries config file not found: {config_file}")
-    
+
     with open(config_file) as f:
         data = yaml.safe_load(f)
-    
+
     # Get global defaults if enabled
     defaults_config = data.get("defaults", {})
     use_defaults = defaults_config.get("use_defaults", False)
     default_severities = defaults_config.get("severities", [])
     default_certainties = defaults_config.get("certainties", [])
     default_urgencies = defaults_config.get("urgencies", [])
-    
+
     countries = []
     for code, config in data.get("countries", {}).items():
         if config.get("enabled", False):
@@ -46,16 +46,18 @@ def _load_countries_from_yaml() -> list[Country]:
             severities = default_severities if use_defaults else config.get("severities", [])
             certainties = default_certainties if use_defaults else config.get("certainties", [])
             urgencies = default_urgencies if use_defaults else config.get("urgencies", [])
-            
-            countries.append(Country(
-                code=code,
-                name=config["name"],
-                feed_url=config["feed_url"],
-                severities=severities,
-                certainties=certainties,
-                urgencies=urgencies,
-            ))
-    
+
+            countries.append(
+                Country(
+                    code=code,
+                    name=config["name"],
+                    feed_url=config["feed_url"],
+                    severities=severities,
+                    certainties=certainties,
+                    urgencies=urgencies,
+                )
+            )
+
     return countries
 
 
@@ -70,6 +72,7 @@ class Settings(BaseSettings):
         http_timeout_seconds: Per-request timeout for feed HTTP calls.
         max_concurrency: Max number of feeds fetched at once.
         database_url: Postgres connection string (used from the DB slice onward).
+
     """
 
     model_config = SettingsConfigDict(env_file=".env", env_prefix="METEOALARM_")

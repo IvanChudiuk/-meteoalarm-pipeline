@@ -8,10 +8,10 @@ fast, at the parsing boundary, instead of silently propagating downstream.
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class Severity(str, Enum):
+class Severity(StrEnum):
     """Alert severity, mirrors MeteoAlarm's traffic-light colour coding.
 
     MeteoAlarm titles alerts as "<Colour> <Event> Warning issued for ...".
@@ -25,7 +25,7 @@ class Severity(str, Enum):
     RED = "Extreme"
 
     @classmethod
-    def from_cap_value(cls, value: str) -> "Severity":
+    def from_cap_value(cls, value: str) -> Severity:
         """Map a raw ``cap:severity`` string to a :class:`Severity` member.
 
         Args:
@@ -36,6 +36,7 @@ class Severity(str, Enum):
 
         Raises:
             ValueError: If ``value`` does not match any known severity.
+
         """
         normalized = value.strip().capitalize()
         for member in cls:
@@ -54,7 +55,7 @@ class Severity(str, Enum):
         }[self]
 
 
-class Certainty(str, Enum):
+class Certainty(StrEnum):
     """How certain the forecaster is that the event will occur."""
 
     OBSERVED = "Observed"
@@ -64,7 +65,7 @@ class Certainty(str, Enum):
     UNKNOWN = "Unknown"
 
 
-class Urgency(str, Enum):
+class Urgency(StrEnum):
     """How quickly action is recommended, per the CAP spec."""
 
     IMMEDIATE = "Immediate"
@@ -74,7 +75,7 @@ class Urgency(str, Enum):
     UNKNOWN = "Unknown"
 
 
-class MessageType(str, Enum):
+class MessageType(StrEnum):
     """Lifecycle state of a CAP message."""
 
     ALERT = "Alert"
