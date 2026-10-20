@@ -5,9 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY pyproject.toml ./
-COPY src/ ./src/
-COPY config/countries.yaml ./config/countries.yaml
+COPY . .
 
 RUN pip install -e ".[dev]"
 
