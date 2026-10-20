@@ -1,0 +1,15 @@
+services:
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"   # web UI at http://localhost:8025
+
+  app:
+    build: .
+    depends_on:
+      - mailhog
+    environment:
+      METEOALARM_SMTP_HOST: mailhog
+      METEOALARM_SMTP_PORT: "1025"
+    volumes:
+      - ./logs:/app/logs

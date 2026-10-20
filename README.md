@@ -9,8 +9,8 @@ validates and normalises them, and prepares them for querying and reporting.
 
 - [Overview](#overview)
 - [Quick start](#quick-start)
+- [Local development](#local-development-without-docker)
 - [Architecture](#architecture)
-- [Running the pipeline](#running-the-pipeline)
 - [Configuration](#configuration)
 - [Linting and formatting](#linting-and-formatting)
 - [Testing](#testing)
@@ -20,9 +20,9 @@ validates and normalises them, and prepares them for querying and reporting.
 ## Overview
 
 This project is the first working slice of the pipeline: **fetch → parse → validate → print → email**.
-It currently fetches alerts for configured countries, parses CAP/ATOM XML feeds,
-validates the data, prints a grouped summary to stdout, and sends an HTML email
-summary with an alert table.
+It fetches alerts for the configured countries concurrently, parses CAP/ATOM XML
+feeds, validates the data, prints a grouped summary to stdout, and sends an HTML
+email summary with an alert table.
 
 Malformed entries are logged as warnings and skipped instead of crashing the feed.
 
@@ -32,9 +32,49 @@ All times in the email are displayed in **Europe/Warsaw timezone** with automati
 
 ### Requirements
 
-- Python 3.12+
+- Docker Engine
+- Docker Compose
 
-### Setup
+### Run
+
+Build the app image and start the app with MailHog:
+
+```bash
+docker compose up --build -d
+```
+
+The app container is a one-shot job: it runs the full pipeline (fetch → parse →
+validate → print → email) and then exits, while MailHog keeps running. That is
+why `docker compose ps` shows the app as exited; use `docker compose ps -a` to
+see it.
+
+View the pipeline output:
+
+```bash
+docker compose logs -f app
+```
+
+Open http://localhost:8025 to inspect the summary email in MailHog. Application
+logs are also kept in the repository's `logs/` directory.
+
+To run the pipeline again, rebuild if you changed code or config, then start it:
+
+```bash
+docker compose up --build
+```
+
+Stop and remove the containers when finished:
+
+```bash
+docker compose down
+```
+
+**Logging:** All logs are written to stdout and `logs/meteoalarm.log`, with daily
+rotation (keeps 7 days of logs and rotates at midnight).
+
+## Local development (without Docker)
+
+Requires Python 3.12+.
 
 ```bash
 python3 -m venv .venv
@@ -42,29 +82,19 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
-### Run
-
-Start MailHog first if you want the summary email to be sent locally:
+To receive the summary email locally, start MailHog first:
 
 ```bash
 docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
 ```
 
-Then run:
+Then run the pipeline:
 
 ```bash
 python -m meteoalarm_pipeline.main
 ```
 
-You can inspect the inbox at: http://localhost:8025 to verify the email was received with the correct alert table.
-Without the MailHog server running, the app won't raise an error and just log a warning.
-
-This fetches the live feeds for all configured countries concurrently, parses and
-validates all entries, prints a grouped summary to stdout, and sends the summary
-email through SMTP to the configured recipient.
-
-**Logging:** All logs are written to stdout and `logs/meteoalarm.log`, with daily
-rotation (keeps 7 days of logs and rotates at midnight).
+Without a running SMTP server the app does not crash; it logs a warning instead.
 
 ## Architecture
 
@@ -72,47 +102,62 @@ The codebase follows a clean/hexagonal layering so business rules stay independe
 of any specific transport, storage, or notification technology:
 
 ```text
-src/meteoalarm_pipeline/
-├── domain/            # Pure models & enums - no I/O, no framework dependency
-├── application/       # Use cases + protocol interfaces + alert filtering
-├── infrastructure/    # Concrete implementations of those ports
-│   ├── feeds/         # HTTP fetcher + CAP/ATOM parser
-│   └── email/         # SMTP notifier + Jinja2 HTML templates
-├── config.py          # Typed settings (env vars) + country registry + timezone config
-├── logging_config.py  # Centralised logging setup (console + daily rotating file logs)
-├── main.py            # Composition root / entrypoint
-└── __init__.py
+meteoalarm-pipeline/
+├── Dockerfile                          # Builds the Python application image
+├── docker-compose.yml                  # Runs the app with MailHog
+├── .dockerignore                       # Excludes local/dev files from image builds
+├── config/
+│   └── countries.yaml                  # Enabled countries and alert filters
+├── src/meteoalarm_pipeline/
+│   ├── application/
+│   │   ├── fetch_alerts.py              # Fetch/parse orchestration and filtering
+│   │   └── interfaces.py                # Ports used by the application layer
+│   ├── domain/
+│   │   ├── enums.py                     # Domain enumerations
+│   │   └── models.py                    # Country and alert models
+│   ├── infrastructure/
+│   │   ├── db/                          # Reserved for future persistence adapters
+│   │   ├── email/
+│   │   │   ├── summary_notifier.py      # SMTP email delivery
+│   │   │   └── summary_email.html.jinja2 # Email template
+│   │   └── feeds/
+│   │       ├── cap_atom_parser.py       # CAP/ATOM parsing and validation
+│   │       └── http_client.py           # Async feed HTTP client
+│   ├── config.py                        # Environment settings and country loading
+│   ├── logging_config.py                # Console and rotating file logging
+│   └── main.py                          # Composition root and entrypoint
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── fixtures/
+└── pyproject.toml                       # Project metadata and dependencies
 ```
 
 The application layer depends only on domain models and the protocol interfaces
 inside the application package. That keeps the business logic independent from
 concrete HTTP clients, parsers, or future storage implementations.
 
-## Running the pipeline
-
-Use the project entrypoint to run the full feed pipeline locally:
-
-```bash
-python -m meteoalarm_pipeline.main
-```
-
-This uses the configured countries in `config/countries.yaml`, fetches their feeds,
-parses each alert, and prints a human-readable summary.
-
 ## Configuration
 
-All runtime settings (log level, timeouts, database URL, etc.) are environment
-variables with a `METEOALARM_` prefix. See `src/meteoalarm_pipeline/config.py` for the full list and default values.
+Runtime settings (log level, timeouts, SMTP settings, etc.) are environment
+variables with a `METEOALARM_` prefix. See `src/meteoalarm_pipeline/config.py`
+for the full list and default values.
 
 ### Email configuration
 
 The app sends summary emails via SMTP with the following defaults:
+
 - **Timezone:** Europe/Warsaw (automatic DST handling: CET in winter, CEST in summer)
 - **SMTP host:** localhost:1025 (local MailHog for development)
 - **Email from:** meteoalarm@localhost
 - **Email to:** ops@localhost
 
+When running under Docker Compose, the SMTP host is overridden to `mailhog`,
+because inside a container `localhost` refers to the container itself. The
+`localhost:1025` default applies when you run the app directly on your machine.
+
 The email includes a formatted HTML table with columns:
+
 - **alert_color** (with colored badges: Red, Orange, Yellow, Green)
 - **alert_type** (event description)
 - **country_name** (e.g. Spain, France)
@@ -170,8 +215,8 @@ Leave filter lists empty to track all values for that filter.
 
 ## Linting and formatting
 
-The project uses Ruff for linting and formatting. Run the checks locally before
-opening a PR:
+The project uses Ruff for linting and formatting. Run the checks before opening
+a PR, either locally (inside your virtual environment) or in the container:
 
 ```bash
 ruff format --check .
@@ -180,10 +225,22 @@ ruff check .
 ruff check . --fix
 ```
 
+```bash
+docker compose run --rm app ruff check .
+```
+
 ## Testing
+
+Locally (inside your virtual environment):
 
 ```bash
 pytest
+```
+
+Or in the container:
+
+```bash
+docker compose run --rm app pytest
 ```
 
 The test suite covers:
@@ -192,7 +249,6 @@ The test suite covers:
 - fetch/parse orchestration logic and alert filtering using fakes instead of real network calls
 - end-to-end flow validation from feed fetch to parsing and filtering
 - email rendering and SMTP send behavior with timezone-aware alert times
-
 
 ## Adding a country
 
@@ -212,10 +268,14 @@ new_country:
   urgencies: [immediate, expected]
 ```
 
+If you run the pipeline with Docker, rebuild afterwards so the image picks up
+the change: `docker compose up --build`.
+
 ## Roadmap
 
+- [x] Docker image and Docker Compose setup for the app and MailHog
 - [x] Fetch + parse + validate + print
-- [x] Scheduled summary email via SMTP using MailHog in local dev and Jinja2 templates for alert summaries
+- [x] Summary email via SMTP using MailHog in local dev and Jinja2 templates for alert summaries
 - [ ] GitHub Actions CI (lint, type-check, test) and scheduled fetch workflow
 - [ ] Postgres persistence via SQLAlchemy (async) + Alembic migrations and idempotent upsert by CAP identifier
-- [ ] Dockerfile + docker-compose (app + Postgres + MailHog)
+- [ ] Add Postgres to the Docker Compose stack
